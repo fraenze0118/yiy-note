@@ -1,26 +1,244 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "highlight.js/styles/github-dark-dimmed.css" layer(base);
+@plugin "@tailwindcss/typography";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-sidebar: var(--sb);
+  --color-border: var(--bd);
+  --color-muted: var(--mu);
+  --color-accent: var(--ac);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, SFMono-Regular, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --bg: #ffffff;
+  --fg: #18181b;
+  --sb: #fafafa;
+  --bd: #e4e4e7;
+  --mu: #f4f4f5;
+  --ac: #f4f4f5;
+  --domain-hardware: #10b981;
+  --domain-software: #3b82f6;
+  --domain-math: #8b5cf6;
+  --domain-philosophy: #f59e0b;
+  --domain-business: #f43f5e;
+  --domain-teal: #14b8a6;
+  --domain-cyan: #06b6d4;
+  --domain-indigo: #6366f1;
+  --domain-pink: #ec4899;
+  --domain-orange: #f97316;
+  --domain-lime: #84cc16;
+  --domain-rose: #e11d48;
+  --domain-sky: #0ea5e9;
+  --domain-violet: #7c3aed;
+  --domain-amber: #d97706;
+}
+
+.dark {
+  --bg: #09090b;
+  --fg: #fafafa;
+  --sb: #0f0f11;
+  --bd: #27272a;
+  --mu: #18181b;
+  --ac: #27272a;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bd);
+  border-radius: 2px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   .prose-note — 统一笔记排版（替代裸 prose className）
+   ═══════════════════════════════════════════════════════ */
+
+.prose-note {
+  @apply prose prose-zinc dark:prose-invert max-w-none;
+
+  /* ── h1: 文档主标题 + 底部分隔线 ── */
+  & h1 {
+    @apply text-2xl font-bold tracking-tight mt-10 mb-5 pb-3;
+    border-bottom: 1px solid var(--bd);
+  }
+
+  /* ── h2 ── */
+  & h2 {
+    @apply text-xl font-semibold tracking-tight mt-8 mb-3;
+  }
+
+  /* ── h3 ── */
+  & h3 {
+    @apply text-lg font-semibold mt-6 mb-2;
+  }
+
+  /* ── h4 ── */
+  & h4 {
+    @apply text-base font-semibold mt-5 mb-1.5;
+  }
+
+  /* ── h5 ── */
+  & h5 {
+    @apply text-sm font-semibold mt-4 mb-1;
+    color: var(--fg);
+    opacity: 0.8;
+  }
+
+  /* ── h6 ── */
+  & h6 {
+    @apply text-xs font-semibold uppercase tracking-wide mt-4 mb-1;
+    color: var(--fg);
+    opacity: 0.65;
+  }
+
+  /* ── 段落 ── */
+  & p {
+    @apply leading-7 mb-4;
+    color: var(--fg);
+    opacity: 0.88;
+  }
+  .dark & p {
+    opacity: 0.82;
+  }
+
+  /* ── 链接 ── */
+  & a {
+    @apply underline underline-offset-2 transition-colors;
+    text-decoration-color: var(--bd);
+  }
+  & a:hover {
+    text-decoration-color: var(--fg);
+  }
+
+  /* ── 行内代码 ── */
+  & :not(pre) > code {
+    @apply text-sm px-1.5 py-0.5 rounded-md;
+    font-family: "Sarasa Mono SC", "Cascadia Code", "JetBrains Mono", "Fira Code", "SimSun", "宋体", ui-monospace, SFMono-Regular, monospace;
+    font-variant-ligatures: none;
+    background: var(--mu);
+    color: var(--fg);
+    border: 0.5px solid var(--bd);
+  }
+
+  /* ── 代码块（英文 + CJK 等宽字体栈，保证中西文混排对齐）── */
+  & pre {
+    @apply rounded-xl border overflow-x-auto my-6;
+    background: #22272e;
+    border-color: #444c56;
+    padding: 1rem;
+    font-family: "Sarasa Mono SC", "Cascadia Code", "JetBrains Mono", "Fira Code", "SimSun", "宋体", ui-monospace, SFMono-Regular, monospace;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    font-variant-ligatures: none;
+    tab-size: 4;
+  }
+  & pre code {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: inherit;
+    font-family: inherit;
+    font-variant-ligatures: inherit;
+    line-height: inherit;
+    tab-size: inherit;
+  }
+
+  /* ── 代码块语言标签 + 复制按钮容器 ── */
+  & .code-tools {
+    @apply flex items-center justify-between mb-2 select-none;
+  }
+  & .code-lang {
+    @apply text-xs font-medium;
+    color: #768390;
+  }
+  & .code-copy {
+    @apply text-xs px-2 py-0.5 rounded-md cursor-pointer transition-colors border-0;
+    background: #2d333b;
+    color: #768390;
+  }
+  & .code-copy:hover {
+    background: #444c56;
+    color: #adbac7;
+  }
+
+  /* ── 分割线 ── */
+  & hr {
+    @apply my-8 border-0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--bd), transparent);
+  }
+
+  /* ── 图片 ── */
+  & img {
+    @apply max-w-full rounded-xl my-6;
+  }
+
+  /* ── 表格 ── */
+  & table {
+    @apply w-full border-collapse text-sm my-6;
+  }
+  & thead {
+    border-bottom: 2px solid var(--bd);
+  }
+  & th {
+    @apply px-4 py-2.5 text-left font-semibold;
+    background: var(--mu);
+  }
+  & td {
+    @apply px-4 py-2;
+    border-bottom: 1px solid var(--bd);
+  }
+  & tbody tr:nth-child(even) td {
+    background: var(--mu);
+  }
+
+  /* ── 列表 ── */
+  & ul {
+    @apply list-disc pl-5 my-3 space-y-1;
+  }
+  & ol {
+    @apply list-decimal pl-5 my-3 space-y-1;
+  }
+  & li {
+    @apply leading-6;
+  }
+  & li > ul,
+  & li > ol {
+    @apply my-1;
+  }
+
+  /* ── 引用块 ── */
+  & blockquote {
+    @apply border-l-2 pl-4 my-5 italic;
+    border-color: var(--bd);
+    color: var(--fg);
+    opacity: 0.75;
+  }
+
+  /* ── 任务列表 ── */
+  & ul:has(li > input[type="checkbox"]) {
+    @apply list-none pl-0;
+  }
+  & li:has(> input[type="checkbox"]) {
+    @apply flex items-center gap-2;
+  }
+  & input[type="checkbox"] {
+    @apply size-4 rounded accent-zinc-500;
+  }
 }
