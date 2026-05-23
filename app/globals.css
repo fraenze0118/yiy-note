@@ -52,6 +52,18 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Electron frameless drag region */
+.electron-drag {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.electron-drag button,
+.electron-drag a,
+.electron-drag input {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;

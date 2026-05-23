@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 
-const POSITIONS_FILE = path.join(process.cwd(), "content", "positions.json");
+import { POSITIONS_FILE } from "./data-path";
 
 export type PositionMap = Record<string, { x: number; y: number }>;
 export type AllPositions = Record<string, PositionMap>; // domainKey -> nodeId -> pos

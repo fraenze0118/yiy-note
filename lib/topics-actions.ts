@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSession } from "./auth";
 import {
   readTopicTree,
   writeTopicTree,
@@ -15,18 +14,6 @@ import {
 } from "./topics-data";
 import { getAllNotes } from "./notes-data";
 
-class AuthError extends Error {
-  constructor() {
-    super("请先登录");
-    this.name = "AuthError";
-  }
-}
-
-async function requireAuth() {
-  const session = await getSession();
-  if (!session) throw new AuthError();
-}
-
 function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
@@ -36,8 +23,7 @@ export async function addTopicNode(
   parentId: string,
   name: string
 ): Promise<TopicNodeData> {
-  await requireAuth();
-  const tree = await readTopicTree();
+    const tree = await readTopicTree();
   if (!tree[domainKey]) {
     tree[domainKey] = [];
   }
@@ -66,8 +52,7 @@ export async function renameTopicNode(
   nodeId: string,
   newName: string
 ): Promise<void> {
-  await requireAuth();
-  const tree = await readTopicTree();
+    const tree = await readTopicTree();
   const domainNodes = tree[domainKey];
   if (!domainNodes) {
     throw new Error(`领域 "${domainKey}" 不存在`);
@@ -103,8 +88,7 @@ export async function deleteTopicNode(
   domainKey: string,
   nodeId: string
 ): Promise<void> {
-  await requireAuth();
-  const tree = await readTopicTree();
+    const tree = await readTopicTree();
   const domainNodes = tree[domainKey];
   if (!domainNodes) {
     throw new Error(`领域 "${domainKey}" 不存在`);

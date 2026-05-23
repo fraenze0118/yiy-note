@@ -257,7 +257,7 @@ export function Sidebar({ domains }: { domains: DomainDef[] }) {
 
   return (
     <aside
-      className="w-64 h-screen flex flex-col border-r shrink-0"
+      className="w-64 h-full flex flex-col border-r shrink-0"
       style={{ backgroundColor: "var(--sb)", borderColor: "var(--bd)" }}
     >
       {/* Logo */}
@@ -400,17 +400,7 @@ export function Sidebar({ domains }: { domains: DomainDef[] }) {
       >
         <ThemeToggle />
         <div className="flex items-center gap-2">
-          {authenticated ? (
-            <span className="size-1.5 rounded-full bg-emerald-400" title="已登录" />
-          ) : (
-            <Link
-              href="/login"
-              className="text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
-            >
-              登录
-            </Link>
-          )}
-          <span className="text-xs text-zinc-400">v0.2.1</span>
+          <span className="text-xs text-zinc-400">v0.5.1</span>
         </div>
       </div>
 

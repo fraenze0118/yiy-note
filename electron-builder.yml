@@ -1,0 +1,23 @@
+appId: com.yiy.note
+productName: Yiy-Note
+directories:
+  output: dist
+  buildResources: assets
+files:
+  - .next/**/*
+  - node_modules/**/*
+  - package.json
+win:
+  target: nsis
+  icon: assets/icon.ico
+mac:
+  target: dmg
+  icon: assets/icon.icns
+  category: public.app-category.productivity
+linux:
+  target: AppImage
+  icon: assets/icon.png
+  category: Utility
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true

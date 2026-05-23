@@ -1,13 +1,11 @@
 import { readFileSync, existsSync } from "fs";
-import path from "path";
+import { TOPICS_FILE } from "./data-path";
 import { getAllNotes } from "./notes-data";
 import { domains } from "./domains";
 import { flattenTopics } from "./topics-data";
 import { loadPositions } from "./positions";
 import type { NoteMeta } from "./types";
 import type { TopicNodeData } from "./topics-data";
-
-const TOPICS_FILE = path.join(process.cwd(), "content", "topics.json");
 
 function loadTopicTree(): Record<string, TopicNodeData[]> {
   if (!existsSync(TOPICS_FILE)) return {};
