@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   LayoutDashboard,
   BookOpen,
@@ -201,6 +201,7 @@ function TopicTreeItems({
 export function Sidebar({ domains }: { domains: DomainDef[] }) {
   const pathname = usePathname();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { theme } = useTheme();
   const { authenticated } = useAuth();
 
@@ -224,6 +225,14 @@ export function Sidebar({ domains }: { domains: DomainDef[] }) {
       localStorage.setItem(LS_EXPANDED_KEY, JSON.stringify(expanded));
     } catch { /* ignore */ }
   }, [expanded]);
+
+  // 从 URL 自动展开对应领域
+  useEffect(() => {
+    const domain = searchParams.get("domain");
+    if (domain && domains.some(d => d.key === domain)) {
+      setExpanded(prev => ({ ...prev, [domain]: true }));
+    }
+  }, [searchParams, domains]);
 
   const toggleDomain = useCallback((key: string) => {
     setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));

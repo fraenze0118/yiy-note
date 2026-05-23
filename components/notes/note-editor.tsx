@@ -8,10 +8,10 @@ import { updateNote } from "@/lib/notes";
 import { renderMarkdownClient } from "@/lib/markdown";
 import { CodeEnhancer } from "./copy-button";
 
-function flattenTopicNames(topics: TopicOption[], depth = 0): { name: string; label: string }[] {
-  const result: { name: string; label: string }[] = [];
+function flattenTopicNames(topics: TopicOption[], depth = 0): { id: string; name: string; label: string }[] {
+  const result: { id: string; name: string; label: string }[] = [];
   for (const t of topics) {
-    result.push({ name: t.name, label: `${"-- ".repeat(depth)}${t.name}` });
+    result.push({ id: t.id, name: t.name, label: `${"-- ".repeat(depth)}${t.name}` });
     if (t.children) {
       result.push(...flattenTopicNames(t.children, depth + 1));
     }
@@ -170,7 +170,7 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
           style={{ borderColor: "var(--bd)" }}
         >
           {topicOptions.map((t) => (
-            <option key={t.name} value={t.name}>
+            <option key={t.id} value={t.name}>
               {t.label}
             </option>
           ))}

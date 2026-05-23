@@ -244,7 +244,7 @@ export function NotePanel({
             {notes.map((n) => (
               <Link
                 key={n.id}
-                href={`/notes/${n.id}`}
+                href={`/notes/${n.id}?from=graph&domain=${node.domain}&topic=${node.topicId ?? ""}`}
                 className="flex items-center gap-2.5 px-3 h-9 rounded-lg hover:bg-[var(--ac)] transition-colors group"
               >
                 <BookOpen size={13} className="text-zinc-400 shrink-0" />

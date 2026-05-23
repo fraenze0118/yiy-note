@@ -139,7 +139,13 @@ export async function getAllNotes(): Promise<NoteMeta[]> {
       if (meta.id) notes.push(meta as NoteMeta);
     }
   }
-  return notes.sort(
+  // 去重：同 ID 保留 updated 最新的
+  const deduped = new Map<string, NoteMeta>();
+  for (const n of notes) {
+    const existing = deduped.get(n.id);
+    if (!existing || n.updated > existing.updated) deduped.set(n.id, n);
+  }
+  return Array.from(deduped.values()).sort(
     (a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
   );
 }
@@ -183,8 +189,14 @@ export async function createNote(
   content: string,
   tags: string[] = []
 ): Promise<NoteMeta> {
-  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  let id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
   const now = new Date().toISOString().slice(0, 10);
+
+  // 确保 ID 唯一
+  const allIds = new Set((await getAllNotes()).map((n) => n.id));
+  while (allIds.has(id)) {
+    id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
 
   // Resolve topicId from topic name
   const nameMap = loadTopicNameMap();

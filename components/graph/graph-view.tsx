@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useCallback, useEffect, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ReactFlow,
   Background,
@@ -33,6 +33,7 @@ export function GraphView({
   domains: DomainDef[];
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { authenticated } = useAuth();
   const [selectedNode, setSelectedNode] = useState<TreeNodeData | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout>>(null);
@@ -51,6 +52,16 @@ export function GraphView({
     setNodes(initialNodes);
     setEdges(initialEdges);
   }, [initialNodes, initialEdges, setNodes, setEdges]);
+
+  // 从笔记返回时自动选中 topic 参数对应的节点
+  useEffect(() => {
+    const topicId = searchParams.get("topic");
+    if (!topicId) return;
+    const match = initialNodes.find((n) => (n.data as TreeNodeData).topicId === topicId);
+    if (match) {
+      setSelectedNode(match.data as TreeNodeData);
+    }
+  }, [searchParams, initialNodes]);
 
   // Save positions on drag stop (debounced)
   const onNodeDragStop = useCallback(
@@ -78,7 +89,7 @@ export function GraphView({
     (_: React.MouseEvent, node: Node) => {
       const d = node.data as TreeNodeData;
       if (d.noteIds && d.noteIds.length > 0) {
-        router.push(`/notes/${d.noteIds[0]}`);
+        router.push(`/notes/${d.noteIds[0]}?from=graph&domain=${d.domain}&topic=${d.topicId ?? ""}`);
       }
     },
     [router]

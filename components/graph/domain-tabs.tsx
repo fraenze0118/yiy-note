@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, Settings } from "lucide-react";
@@ -9,6 +9,8 @@ import { useAuth } from "@/lib/auth-context";
 import { DomainFormDialog } from "./domain-form-dialog";
 import { DomainManageDialog } from "./domain-manage-dialog";
 import type { DomainDef } from "@/lib/types";
+
+const LS_DOMAIN = "yiy-last-graph-domain";
 
 export function DomainTabs({
   active,
@@ -21,10 +23,31 @@ export function DomainTabs({
   const { authenticated } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [showManage, setShowManage] = useState(false);
+  const initRef = useRef(false);
 
   const handleSuccess = useCallback(() => {
     router.refresh();
   }, [router]);
+
+  // 记忆最后查看的领域
+  useEffect(() => {
+    if (active && domains.some(d => d.key === active)) {
+      localStorage.setItem(LS_DOMAIN, active);
+    }
+  }, [active, domains]);
+
+  // 首次加载：URL 无 domain 参数时跳转到上次查看的领域
+  useEffect(() => {
+    if (initRef.current) return;
+    initRef.current = true;
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has("domain")) {
+      const cached = localStorage.getItem(LS_DOMAIN);
+      if (cached && domains.some(d => d.key === cached) && cached !== active) {
+        router.replace(`/graph?domain=${cached}`);
+      }
+    }
+  }, [active, domains, router]);
 
   return (
     <>

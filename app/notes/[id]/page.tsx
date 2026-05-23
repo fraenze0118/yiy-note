@@ -7,13 +7,14 @@ import { getDomain, domains } from "@/lib/domains";
 import { ArrowLeft, Clock, Pencil } from "lucide-react";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { CodeEnhancer } from "@/components/notes/copy-button";
+import { DeleteNoteButton } from "@/components/notes/delete-note-button";
 
 export default async function NotePage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit?: string; from?: string; domain?: string; topic?: string }>;
 }) {
   const { id } = await params;
   const sp = await searchParams;
@@ -27,22 +28,27 @@ export default async function NotePage({
   const html = renderMarkdown(note.content);
   const isEditing = session ? edit === "true" : false;
 
+  const backHref = sp?.from === "graph" && sp?.domain
+    ? `/graph?domain=${sp.domain}${sp?.topic ? `&topic=${sp.topic}` : ""}`
+    : "/notes";
+  const backLabel = sp?.from === "graph" ? "知识图谱" : "知识库";
+
   return (
     <div className="max-w-4xl mx-auto px-8 py-10">
       {/* Breadcrumb */}
       <div className="flex items-center gap-3 mb-8">
         <Link
-          href="/notes"
+          href={backHref}
           className="size-7 flex items-center justify-center rounded-lg hover:bg-[var(--ac)] transition-colors text-zinc-500"
         >
           <ArrowLeft size={16} />
         </Link>
         <div className="h-3 w-px" style={{ backgroundColor: "var(--bd)" }} />
         <Link
-          href="/notes"
+          href={backHref}
           className="text-sm text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
         >
-          知识库
+          {backLabel}
         </Link>
         <span className="text-sm text-zinc-400">/</span>
         <span className="text-sm text-zinc-400">{domain?.name}</span>
@@ -58,12 +64,15 @@ export default async function NotePage({
             <div className="flex items-center gap-3 mb-2 flex-wrap">
               <h1 className="text-2xl font-semibold tracking-tight">{note.meta.title}</h1>
               {session && (
-                <Link
-                  href={`/notes/${id}?edit=true`}
-                  className="size-7 flex items-center justify-center rounded-lg hover:bg-[var(--ac)] transition-colors text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
-                >
-                  <Pencil size={14} />
-                </Link>
+                <>
+                  <Link
+                    href={`/notes/${id}?edit=true`}
+                    className="size-7 flex items-center justify-center rounded-lg hover:bg-[var(--ac)] transition-colors text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300"
+                  >
+                    <Pencil size={14} />
+                  </Link>
+                  <DeleteNoteButton noteId={note.meta.id} title={note.meta.title} />
+                </>
               )}
             </div>
             <div className="flex items-center gap-3 text-xs text-zinc-400 flex-wrap">

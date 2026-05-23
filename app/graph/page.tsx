@@ -9,8 +9,9 @@ export default async function GraphPage({
   searchParams: Promise<{ domain?: string }>;
 }) {
   const sp = await searchParams;
-  const domainKey = sp?.domain ?? "software";
-  const validDomain = domains.find((d) => d.key === domainKey) ? domainKey : "software";
+  const firstDomain = domains[0]?.key ?? "";
+  const domainKey = sp?.domain ?? firstDomain;
+  const validDomain = domains.find((d) => d.key === domainKey) ? domainKey : firstDomain;
 
   const [data, allNotes] = await Promise.all([
     buildDomainTree(validDomain),

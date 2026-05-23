@@ -4,6 +4,34 @@ import { memo } from "react";
 import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { TreeNodeData } from "@/lib/graph";
 
+/* ── 颜色工具：将 CSS var 字符串转为真实 hex，绕过 ReactFlow 中 var() 后缀失效问题 ── */
+
+const VAR_TO_HEX: Record<string, string> = {
+  "var(--domain-hardware)": "#10b981",
+  "var(--domain-software)": "#3b82f6",
+  "var(--domain-math)": "#8b5cf6",
+  "var(--domain-philosophy)": "#f59e0b",
+  "var(--domain-business)": "#f43f5e",
+  "var(--domain-teal)": "#14b8a6",
+  "var(--domain-cyan)": "#06b6d4",
+  "var(--domain-indigo)": "#6366f1",
+  "var(--domain-pink)": "#ec4899",
+  "var(--domain-orange)": "#f97316",
+  "var(--domain-lime)": "#84cc16",
+  "var(--domain-rose)": "#e11d48",
+  "var(--domain-sky)": "#0ea5e9",
+  "var(--domain-violet)": "#7c3aed",
+  "var(--domain-amber)": "#d97706",
+  "var(--fg)": "#18181b",
+};
+
+/** CSS var 字符串 → hex。可选 alpha 0-1 追加为 8 位 hex */
+function hex(color: string, alpha?: number): string {
+  const h = VAR_TO_HEX[color] ?? "#18181b";
+  if (alpha === undefined) return h;
+  return h + Math.round(alpha * 255).toString(16).padStart(2, "0");
+}
+
 /* L0 — 领域根节点 */
 function TreeDomainNode({ data }: NodeProps) {
   const d = data as unknown as TreeNodeData;
@@ -34,7 +62,7 @@ function TopicL1({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: color, width: 5, height: 5, border: "none" }} />
       <div className="flex items-center gap-2">
         <span className="text-[13px] font-medium" style={{ color }}>{d.label}</span>
-        {count > 0 && <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium text-white" style={{ backgroundColor: `${color}cc` }}>{count}</span>}
+        <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.8) : "var(--ac)", color: count > 0 ? "white" : "var(--bd)" }}>{count}</span>
       </div>
     </div>
   );
@@ -53,7 +81,7 @@ function TopicL2({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <span className="shrink-0" style={{ width: 6, height: 6, backgroundColor: color, transform: "rotate(45deg)", marginLeft: 2 }} />
         <span className="text-xs font-medium" style={{ color: "var(--fg)" }}>{d.label}</span>
-        {count > 0 && <span className="text-[10px] px-1 rounded-full" style={{ backgroundColor: `${color}18`, color }}>{count}</span>}
+        <span className="text-[10px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.094) : "var(--ac)", color: count > 0 ? color : "var(--bd)" }}>{count}</span>
       </div>
     </div>
   );
@@ -72,7 +100,7 @@ function TopicL3({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <span className="shrink-0 rounded-full" style={{ width: 5, height: 5, border: `2px solid ${color}`, backgroundColor: "transparent", marginLeft: 2 }} />
         <span className="text-[11px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-        {count > 0 && <span className="text-[9px] px-1 rounded-full" style={{ backgroundColor: `${color}15`, color: `${color}cc` }}>{count}</span>}
+        <span className="text-[9px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.082) : "var(--ac)", color: count > 0 ? hex(color, 0.8) : "var(--bd)" }}>{count}</span>
       </div>
     </div>
   );
@@ -90,7 +118,7 @@ function TopicL4({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: `${color}4d`, width: 3, height: 3, border: "none" }} />
       <span className="shrink-0 rounded-full" style={{ width: 5, height: 5, backgroundColor: color }} />
       <span className="text-[12px] font-semibold" style={{ color }}>{d.label}</span>
-      {count > 0 && <span className="text-[9px] px-1.5 py-0.5 rounded-md font-medium text-white" style={{ backgroundColor: `${color}99` }}>{count}</span>}
+      <span className="text-[9px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.6) : "var(--ac)", color: count > 0 ? "white" : "var(--bd)" }}>{count}</span>
     </div>
   );
 }
@@ -107,7 +135,7 @@ function TopicL5({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 2, height: 2, border: "none", opacity: 0.4 }} />
       <span className="shrink-0 rounded-sm" style={{ width: 2.5, height: 14, backgroundColor: `${color}59`, marginRight: 6 }} />
       <span className="text-[10px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-      {count > 0 && <span className="text-[8px] text-zinc-500 ml-1.5">{count}</span>}
+      <span className="text-[8px] ml-1.5" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
     </div>
   );
 }
@@ -124,7 +152,7 @@ function TopicL6({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 1.5, height: 1.5, border: "none", opacity: 0.2 }} />
       <span className="shrink-0 rounded-full" style={{ width: 3, height: 3, backgroundColor: `${color}40`, marginRight: 8 }} />
       <span className="text-[9px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-      {count > 0 && <span className="text-[7px] text-zinc-400 ml-1">{count}</span>}
+      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
     </div>
   );
 }
@@ -133,13 +161,14 @@ function TopicL6({ data }: NodeProps) {
 function TopicL7({ data }: NodeProps) {
   const d = data as unknown as TreeNodeData;
   const count = d.noteCount ?? 0;
+  const color = d.color;
   return (
     <div className="flex items-center cursor-pointer transition-all hover:opacity-60"
       style={{ minWidth: 104, minHeight: 18, paddingLeft: 24, opacity: 0.7 }}>
       <Handle type="target" position={Position.Left} style={{ backgroundColor: "var(--bd)", width: 1, height: 1, border: "none", opacity: 0.1 }} />
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 1, height: 1, border: "none", opacity: 0.1 }} />
       <span className="text-[8px] italic" style={{ color: "var(--fg)" }}>{d.label}</span>
-      {count > 0 && <span className="text-[7px] text-zinc-400 ml-1">{count}</span>}
+      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
     </div>
   );
 }
