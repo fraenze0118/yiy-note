@@ -52,6 +52,26 @@ body {
   font-family: var(--font-sans);
 }
 
+/* ── 主题切换过渡 ── */
+body, main, aside, nav,
+button, a, input, select, textarea,
+div[class*="rounded"], div[class*="border"],
+th, td, pre, code, blockquote, hr {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Electron frameless drag region */
+.electron-drag {
+  -webkit-app-region: drag;
+  app-region: drag;
+}
+.electron-drag button,
+.electron-drag a,
+.electron-drag input {
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
   width: 4px;
@@ -241,4 +261,27 @@ body {
   & input[type="checkbox"] {
     @apply size-4 rounded accent-zinc-500;
   }
+
+  /* ── dark 模式对比度增强 ── */
+  .dark & h5 { opacity: 0.9; }
+  .dark & h6 { opacity: 0.8; }
+  .dark & blockquote { opacity: 0.85; }
+  .dark & p { opacity: 0.9; }
+}
+
+/* ── ReactFlow 控件暗色适配 ── */
+.dark .react-flow__controls-button {
+  background: #27272a !important;
+  color: #a1a1aa !important;
+  border-color: #3f3f46 !important;
+  fill: #a1a1aa !important;
+}
+.dark .react-flow__controls-button:hover {
+  background: #3f3f46 !important;
+}
+.dark .react-flow__minimap {
+  background: #18181b !important;
+}
+.dark .react-flow__background pattern circle {
+  fill: #3f3f46 !important;
 }

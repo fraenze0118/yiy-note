@@ -1,8 +1,7 @@
 import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-
-const DOMAINS_FILE = path.join(process.cwd(), "content", "domains.json");
+import { DOMAINS_FILE } from "./data-path";
 
 export interface DomainData {
   key: string;

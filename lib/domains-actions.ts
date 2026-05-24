@@ -4,23 +4,8 @@ import { revalidatePath } from "next/cache";
 import { mkdir, rmdir, readdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-import { getSession } from "./auth";
 import { readTopicTree, writeTopicTree } from "./topics-data";
-
-const CONTENT_ROOT = path.join(process.cwd(), "content");
-const DOMAINS_FILE = path.join(CONTENT_ROOT, "domains.json");
-
-class AuthError extends Error {
-  constructor() {
-    super("请先登录");
-    this.name = "AuthError";
-  }
-}
-
-async function requireAuth() {
-  const session = await getSession();
-  if (!session) throw new AuthError();
-}
+import { DATA_ROOT, DOMAINS_FILE } from "./data-path";
 
 export interface DomainData {
   key: string;
@@ -48,7 +33,6 @@ export async function addDomain(
   color: string,
   icon: string
 ): Promise<DomainData> {
-  await requireAuth();
 
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(key)) {
     throw new Error("领域 key 只能包含小写字母、数字和连字符");
@@ -64,7 +48,7 @@ export async function addDomain(
   await writeDomainsJson(domains);
 
   // Create directory for the domain
-  await mkdir(path.join(CONTENT_ROOT, key), { recursive: true });
+  await mkdir(path.join(DATA_ROOT, key), { recursive: true });
 
   // Create empty entry in topics.json
   const topics = await readTopicTree();
@@ -80,7 +64,6 @@ export async function addDomain(
 }
 
 export async function deleteDomain(domainKey: string): Promise<void> {
-  await requireAuth();
 
   const domains = await readDomainsJson();
   const domain = domains.find((d) => d.key === domainKey);
@@ -96,7 +79,7 @@ export async function deleteDomain(domainKey: string): Promise<void> {
   }
 
   // Check for notes in this domain
-  const domainDir = path.join(CONTENT_ROOT, domainKey);
+  const domainDir = path.join(DATA_ROOT, domainKey);
   if (existsSync(domainDir)) {
     const files = await readdir(domainDir);
     const mdFiles = files.filter((f) => f.endsWith(".md"));
@@ -131,7 +114,6 @@ export async function updateDomain(
   domainKey: string,
   updates: { name?: string; color?: string; icon?: string }
 ): Promise<DomainData> {
-  await requireAuth();
 
   const domains = await readDomainsJson();
   const idx = domains.findIndex((d) => d.key === domainKey);

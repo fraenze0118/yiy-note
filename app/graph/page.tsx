@@ -19,7 +19,7 @@ export default async function GraphPage({
   ]);
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+    <div className="flex flex-col h-full">
       <DomainTabs active={validDomain} domains={domains} />
       <GraphView
         domainKey={validDomain}

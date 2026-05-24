@@ -3,6 +3,30 @@ import { getAllNotes } from "@/lib/notes-data";
 import { getCachedSession } from "@/lib/auth";
 import { domains, domainIconMap } from "@/lib/domains";
 import { Clock, Plus, X } from "lucide-react";
+import type { TopicOption } from "@/lib/types";
+
+/** 收集某主题及其所有子节点的名称集合 */
+function collectSubtreeNames(topicName: string, topics: TopicOption[]): Set<string> {
+  const names = new Set<string>();
+  function findAndCollect(nodes: TopicOption[]): boolean {
+    for (const n of nodes) {
+      if (n.name === topicName) {
+        names.add(n.name);
+        function walk(children: TopicOption[]) {
+          for (const c of children) { names.add(c.name); if (c.children) walk(c.children); }
+        }
+        if (n.children) walk(n.children);
+        return true;
+      }
+      if (n.children && findAndCollect(n.children)) return true;
+    }
+    return false;
+  }
+  findAndCollect(topics);
+  names.add(topicName);
+  return names;
+}
+
 export default async function NotesPage({
   searchParams,
 }: {
@@ -15,9 +39,16 @@ export default async function NotesPage({
 
   const allNotes = await getAllNotes();
 
+  // 构建子树名称集合（点击 L1 时包含所有子节点笔记）
+  let subtreeNames: Set<string> | null = null;
+  if (filterTopic && filterDomain) {
+    const domain = domains.find(d => d.key === filterDomain);
+    if (domain) subtreeNames = collectSubtreeNames(filterTopic, domain.topics);
+  }
+
   const filtered = allNotes.filter((n) => {
     if (filterDomain && n.domain !== filterDomain) return false;
-    if (filterTopic && n.topic !== filterTopic) return false;
+    if (subtreeNames && !subtreeNames.has(n.topic)) return false;
     return true;
   });
 
@@ -39,7 +70,7 @@ export default async function NotesPage({
           <Link
             href="/notes/new"
             className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium text-white transition-colors"
-            style={{ backgroundColor: "var(--fg)" }}
+            style={{ backgroundColor: "#3b82f6" }}
           >
             <Plus size={14} />
             新建笔记

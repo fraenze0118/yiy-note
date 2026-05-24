@@ -1,13 +1,11 @@
 import "server-only";
 
 import { readFileSync, existsSync } from "fs";
-import path from "path";
 import type { LucideIcon } from "lucide-react";
 import { getDomainIcon } from "./domain-icons";
 import type { DomainDef, TopicOption } from "./types";
 
-const DOMAINS_FILE = path.join(process.cwd(), "content", "domains.json");
-const TOPICS_FILE = path.join(process.cwd(), "content", "topics.json");
+import { DOMAINS_FILE, TOPICS_FILE } from "./data-path";
 
 function loadDomains(): DomainDef[] {
   if (!existsSync(DOMAINS_FILE)) return [];

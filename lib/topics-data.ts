@@ -2,7 +2,7 @@ import { readFile, writeFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 
-const TOPICS_FILE = path.join(process.cwd(), "content", "topics.json");
+import { TOPICS_FILE } from "./data-path";
 
 export interface TopicNodeData {
   id: string;

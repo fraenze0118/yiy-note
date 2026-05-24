@@ -3,9 +3,7 @@ import { readFileSync, existsSync } from "fs";
 import path from "path";
 import type { Note, NoteMeta } from "./types";
 
-const CONTENT_ROOT = path.join(process.cwd(), "content");
-const DOMAINS_FILE = path.join(CONTENT_ROOT, "domains.json");
-const TOPICS_FILE = path.join(CONTENT_ROOT, "topics.json");
+import { DATA_ROOT, DOMAINS_FILE, TOPICS_FILE } from "./data-path";
 
 function loadDomainKeys(): string[] {
   if (!existsSync(DOMAINS_FILE)) return [];
@@ -122,14 +120,14 @@ function serializeFrontmatter(meta: NoteMeta, content: string): string {
 }
 
 function filePath(domain: string, slug: string): string {
-  return path.join(CONTENT_ROOT, domain, `${slug}.md`);
+  return path.join(DATA_ROOT, domain, `${slug}.md`);
 }
 
 export async function getAllNotes(): Promise<NoteMeta[]> {
   const domains = loadDomainKeys();
   const notes: NoteMeta[] = [];
   for (const domain of domains) {
-    const dir = path.join(CONTENT_ROOT, domain);
+    const dir = path.join(DATA_ROOT, domain);
     if (!existsSync(dir)) continue;
     const files = await readdir(dir);
     for (const file of files) {
@@ -151,7 +149,7 @@ export async function getAllNotes(): Promise<NoteMeta[]> {
 }
 
 export async function getNotesByDomain(domain: string): Promise<NoteMeta[]> {
-  const dir = path.join(CONTENT_ROOT, domain);
+  const dir = path.join(DATA_ROOT, domain);
   if (!existsSync(dir)) return [];
   const files = await readdir(dir);
   const notes: NoteMeta[] = [];
@@ -169,7 +167,7 @@ export async function getNotesByDomain(domain: string): Promise<NoteMeta[]> {
 export async function getNoteById(id: string): Promise<Note | null> {
   const domains = loadDomainKeys();
   for (const domain of domains) {
-    const dir = path.join(CONTENT_ROOT, domain);
+    const dir = path.join(DATA_ROOT, domain);
     if (!existsSync(dir)) continue;
     const files = await readdir(dir);
     for (const file of files) {
@@ -214,7 +212,7 @@ export async function createNote(
     links: [],
   };
   const slug = slugify(title) || id;
-  const dir = path.join(CONTENT_ROOT, domain);
+  const dir = path.join(DATA_ROOT, domain);
   await mkdir(dir, { recursive: true });
   await writeFile(filePath(domain, slug), serializeFrontmatter(meta, content), "utf-8");
   return meta;

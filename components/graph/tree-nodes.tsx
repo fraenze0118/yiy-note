@@ -62,7 +62,7 @@ function TopicL1({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: color, width: 5, height: 5, border: "none" }} />
       <div className="flex items-center gap-2">
         <span className="text-[13px] font-medium" style={{ color }}>{d.label}</span>
-        <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.8) : "var(--ac)", color: count > 0 ? "white" : "var(--bd)" }}>{count}</span>
+        <span className="text-[10px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.8) : "var(--ac)", color: count > 0 ? "white" : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
       </div>
     </div>
   );
@@ -81,7 +81,7 @@ function TopicL2({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <span className="shrink-0" style={{ width: 6, height: 6, backgroundColor: color, transform: "rotate(45deg)", marginLeft: 2 }} />
         <span className="text-xs font-medium" style={{ color: "var(--fg)" }}>{d.label}</span>
-        <span className="text-[10px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.094) : "var(--ac)", color: count > 0 ? color : "var(--bd)" }}>{count}</span>
+        <span className="text-[10px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.094) : "var(--ac)", color: count > 0 ? color : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
       </div>
     </div>
   );
@@ -100,7 +100,7 @@ function TopicL3({ data }: NodeProps) {
       <div className="flex items-center gap-2">
         <span className="shrink-0 rounded-full" style={{ width: 5, height: 5, border: `2px solid ${color}`, backgroundColor: "transparent", marginLeft: 2 }} />
         <span className="text-[11px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-        <span className="text-[9px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.082) : "var(--ac)", color: count > 0 ? hex(color, 0.8) : "var(--bd)" }}>{count}</span>
+        <span className="text-[9px] px-1 rounded-full" style={{ backgroundColor: count > 0 ? hex(color, 0.082) : "var(--ac)", color: count > 0 ? hex(color, 0.8) : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
       </div>
     </div>
   );
@@ -118,7 +118,7 @@ function TopicL4({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: `${color}4d`, width: 3, height: 3, border: "none" }} />
       <span className="shrink-0 rounded-full" style={{ width: 5, height: 5, backgroundColor: color }} />
       <span className="text-[12px] font-semibold" style={{ color }}>{d.label}</span>
-      <span className="text-[9px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.6) : "var(--ac)", color: count > 0 ? "white" : "var(--bd)" }}>{count}</span>
+      <span className="text-[9px] px-1.5 py-0.5 rounded-md font-medium" style={{ backgroundColor: count > 0 ? hex(color, 0.6) : "var(--ac)", color: count > 0 ? "white" : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
     </div>
   );
 }
@@ -135,7 +135,7 @@ function TopicL5({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 2, height: 2, border: "none", opacity: 0.4 }} />
       <span className="shrink-0 rounded-sm" style={{ width: 2.5, height: 14, backgroundColor: `${color}59`, marginRight: 6 }} />
       <span className="text-[10px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-      <span className="text-[8px] ml-1.5" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
+      <span className="text-[8px] ml-1.5" style={{ color: count > 0 ? color : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
     </div>
   );
 }
@@ -152,7 +152,7 @@ function TopicL6({ data }: NodeProps) {
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 1.5, height: 1.5, border: "none", opacity: 0.2 }} />
       <span className="shrink-0 rounded-full" style={{ width: 3, height: 3, backgroundColor: `${color}40`, marginRight: 8 }} />
       <span className="text-[9px]" style={{ color: "var(--fg)" }}>{d.label}</span>
-      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
+      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
     </div>
   );
 }
@@ -168,7 +168,7 @@ function TopicL7({ data }: NodeProps) {
       <Handle type="target" position={Position.Left} style={{ backgroundColor: "var(--bd)", width: 1, height: 1, border: "none", opacity: 0.1 }} />
       <Handle type="source" position={Position.Right} style={{ backgroundColor: "var(--bd)", width: 1, height: 1, border: "none", opacity: 0.1 }} />
       <span className="text-[8px] italic" style={{ color: "var(--fg)" }}>{d.label}</span>
-      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--bd)" }}>{count}</span>
+      <span className="text-[7px] ml-1" style={{ color: count > 0 ? color : "var(--fg)", opacity: count > 0 ? 1 : 0.35 }}>{count}</span>
     </div>
   );
 }
