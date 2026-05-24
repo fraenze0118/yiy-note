@@ -18,24 +18,24 @@ export function ElectronTitleBar() {
   return (
     <div
       className="electron-drag h-7 shrink-0 flex items-center justify-end select-none"
-      style={{ backgroundColor: "#18181b" }}
+      style={{ backgroundColor: "#27272a" }}
     >
       <div className="flex items-center gap-2 pr-4">
         <button
           onClick={() => api?.minimize()}
-          className="size-2 rounded-full"
+          className="size-2.5 rounded-full"
           style={{ backgroundColor: "#22c55e" }}
           title="最小化"
         />
         <button
           onClick={() => api?.maximize()}
-          className="size-2 rounded-full"
+          className="size-2.5 rounded-full"
           style={{ backgroundColor: "#eab308" }}
           title="最大化"
         />
         <button
           onClick={() => api?.close()}
-          className="size-2 rounded-full"
+          className="size-2.5 rounded-full"
           style={{ backgroundColor: "#ef4444" }}
           title="关闭"
         />

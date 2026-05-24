@@ -5,14 +5,16 @@ directories:
   buildResources: assets
 files:
   - .next/**/*
-  - node_modules/**/*
+  - main/**/*
+  - public/splash.html
   - package.json
+  - node_modules/**/*
 win:
   target: nsis
-  icon: assets/icon.ico
+  icon: assets/icon.png
 mac:
   target: dmg
-  icon: assets/icon.icns
+  icon: assets/icon.png
   category: public.app-category.productivity
 linux:
   target: AppImage
