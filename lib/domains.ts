@@ -1,6 +1,7 @@
 import "server-only";
 
 import { readFileSync, existsSync } from "fs";
+import { cache } from "react";
 import type { LucideIcon } from "lucide-react";
 import { getDomainIcon } from "./domain-icons";
 import type { DomainDef, TopicOption } from "./types";
@@ -28,19 +29,16 @@ function loadDomains(): DomainDef[] {
   }));
 }
 
-export const domains: DomainDef[] = loadDomains();
-
-export const domainIconMap: Record<string, LucideIcon> = new Proxy(
-  {} as Record<string, LucideIcon>,
-  {
-    get(_, key: string) {
-      return getDomainIcon(domains.find((d) => d.key === key)?.icon ?? "code2");
-    },
-  }
-);
+/** 每次请求重新读取文件，确保新增/编辑的节点立即可见 */
+export const getDomains = cache(loadDomains);
 
 export function getDomain(key: string): DomainDef | undefined {
-  return domains.find((d) => d.key === key);
+  return getDomains().find((d) => d.key === key);
+}
+
+/** 按 key 解析领域图标 */
+export function getDomainIconByKey(key: string): LucideIcon {
+  return getDomainIcon(getDomain(key)?.icon ?? "code2");
 }
 
 export { getDomainIcon } from "./domain-icons";

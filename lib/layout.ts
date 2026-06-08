@@ -130,9 +130,10 @@ export function layoutTree(data: TreeGraphData) {
       // Set fixed positions for saved nodes so dagre works around them
       for (const [id, pos] of Object.entries(data.savedPositions)) {
         const nodeData = data.nodes.find((n) => n.id === id);
+        if (!nodeData) continue; // 节点已删除，跳过旧位置
         const size = getNodeSize(
-          nodeData?.data.nodeType ?? "topic",
-          (nodeData?.data as Record<string, unknown>).level as number ?? 1,
+          nodeData.data.nodeType,
+          (nodeData.data as Record<string, unknown>).level as number ?? 1,
         );
         g.setNode(id, {
           width: size.width,

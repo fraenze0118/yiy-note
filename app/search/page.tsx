@@ -1,7 +1,7 @@
 import { getAllNotes } from "@/lib/notes-data";
 import { SearchBox } from "@/components/ui/search-box";
 import { TagCloud } from "@/components/ui/tag-cloud";
-import { domains } from "@/lib/domains";
+import { getDomains } from "@/lib/domains";
 import { Search, Hash } from "lucide-react";
 
 export default async function SearchPage() {
@@ -18,7 +18,7 @@ export default async function SearchPage() {
           <Search size={15} className="text-zinc-400" />
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">搜索</h2>
         </div>
-        <SearchBox notes={notes} domains={domains} />
+        <SearchBox notes={notes} domains={getDomains()} />
       </section>
 
       {/* Divider */}
@@ -30,7 +30,7 @@ export default async function SearchPage() {
           <Hash size={15} className="text-zinc-400" />
           <h2 className="text-sm font-medium text-zinc-500 dark:text-zinc-400">标签</h2>
         </div>
-        <TagCloud notes={notes} domains={domains} />
+        <TagCloud notes={notes} domains={getDomains()} />
       </section>
     </div>
   );

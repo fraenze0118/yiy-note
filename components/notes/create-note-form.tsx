@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Save, ArrowLeft } from "lucide-react";
+import { Save, ArrowLeft, Image } from "lucide-react";
 import Link from "next/link";
 import { createNote } from "@/lib/notes";
+import { uploadImage } from "@/lib/images";
 import type { DomainDef, TopicOption } from "@/lib/types";
 
 function flattenTopics(topics: TopicOption[], depth = 0): { id: string; label: string }[] {
@@ -34,6 +35,8 @@ export function CreateNoteForm({
   const [content, setContent] = useState("");
   const [tags, setTags] = useState("");
   const [saving, setSaving] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const currentDomainDef = domains.find((d) => d.key === domain);
   const topicOptions = useMemo(
@@ -67,6 +70,51 @@ export function CreateNoteForm({
     }
   };
 
+  const insertAtCursor = useCallback((text: string) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const newContent = content.slice(0, start) + text + content.slice(end);
+    setContent(newContent);
+    const newPos = start + text.length;
+    setTimeout(() => { ta.setSelectionRange(newPos, newPos); ta.focus(); }, 0);
+  }, [content]);
+
+  const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const url = await uploadImage(domain, reader.result as string);
+            insertAtCursor(`![图片](${url})\n`);
+          } catch { /* ignore */ }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }, [domain, insertAtCursor]);
+
+  const handleImageImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const url = await uploadImage(domain, reader.result as string);
+        insertAtCursor(`![图片](${url})\n`);
+      } catch { /* ignore */ }
+    };
+    reader.readAsDataURL(file);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  }, [domain, insertAtCursor]);
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
@@ -78,6 +126,14 @@ export function CreateNoteForm({
           <ArrowLeft size={14} />
           取消
         </Link>
+        <button
+          onClick={() => imageInputRef.current?.click()}
+          className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+          title="插入图片"
+        >
+          <Image size={14} />
+          图片
+        </button>
         <div className="flex-1" />
         <button
           onClick={handleSave}
@@ -89,6 +145,14 @@ export function CreateNoteForm({
           {saving ? "创建中..." : "创建笔记"}
         </button>
       </div>
+
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageImport}
+      />
 
       {/* Title */}
       <input
@@ -142,8 +206,10 @@ export function CreateNoteForm({
 
       {/* Content */}
       <textarea
+        ref={textareaRef}
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        onPaste={handlePaste}
         className="w-full min-h-[400px] bg-transparent outline-none resize-y font-mono text-sm leading-7 p-4 rounded-xl border"
         style={{ borderColor: "var(--bd)" }}
         placeholder="开始写作...（支持 Markdown、KaTeX 数学公式、代码高亮）"

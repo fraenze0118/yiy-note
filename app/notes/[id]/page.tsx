@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getNoteById, getAllNotes } from "@/lib/notes-data";
 import { getCachedSession } from "@/lib/auth";
-import { renderMarkdown } from "@/lib/markdown";
-import { getDomain, domains } from "@/lib/domains";
+import { getDomain, getDomains } from "@/lib/domains";
 import { ArrowLeft, Clock, Pencil } from "lucide-react";
 import { NoteEditor } from "@/components/notes/note-editor";
+import { NoteContent } from "@/components/notes/note-content";
 import { CodeEnhancer } from "@/components/notes/copy-button";
 import { DeleteNoteButton } from "@/components/notes/delete-note-button";
 
@@ -25,7 +25,6 @@ export default async function NotePage({
   const session = await getCachedSession();
   const allNotes = await getAllNotes();
   const domain = getDomain(note.meta.domain);
-  const html = renderMarkdown(note.content);
   const isEditing = session ? edit === "true" : false;
 
   const backHref = sp?.from === "graph" && sp?.domain
@@ -57,7 +56,7 @@ export default async function NotePage({
       </div>
 
       {isEditing ? (
-        <NoteEditor note={note} allTitles={allNotes.map((n) => n.title)} domains={domains} />
+        <NoteEditor note={note} allTitles={allNotes.map((n) => n.title)} domains={getDomains()} />
       ) : (
         <>
           <div className="mb-8">
@@ -90,7 +89,7 @@ export default async function NotePage({
               <span>{note.meta.topic}</span>
               <span className="flex items-center gap-1">
                 <Clock size={11} />
-                创建于 {note.meta.created} &middot; 更新于 {note.meta.updated}
+                创建于 {note.meta.created.slice(0, 10)} &middot; 更新于 {note.meta.updated.slice(0, 10)}
               </span>
             </div>
             {note.meta.tags.length > 0 && (
@@ -108,10 +107,7 @@ export default async function NotePage({
             )}
           </div>
 
-          <article
-            className="prose-note"
-            dangerouslySetInnerHTML={{ __html: html }}
-          />
+          <NoteContent rawMarkdown={note.content} />
           <CodeEnhancer />
         </>
       )}

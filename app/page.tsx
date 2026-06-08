@@ -7,11 +7,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getAllNotes } from "@/lib/notes-data";
-import { domains } from "@/lib/domains";
-import { domainIconMap } from "@/lib/domains";
+import { getDomains, getDomainIconByKey } from "@/lib/domains";
 import { Heatmap } from "@/components/ui/heatmap";
 
 export default async function Home() {
+  const domains = getDomains();
   const notes = await getAllNotes();
 
   const domainCounts = domains.map((d) => ({
@@ -75,7 +75,7 @@ export default async function Home() {
         </div>
         <div className="grid grid-cols-4 gap-3">
           {domainCounts.map((d) => {
-            const Icon = domainIconMap[d.key];
+            const Icon = getDomainIconByKey(d.key);
             return (
               <Link
                 key={d.key}
@@ -146,7 +146,7 @@ export default async function Home() {
                     />
                     <span className="text-sm truncate">{n.title}</span>
                   </div>
-                  <span className="text-xs text-zinc-400 shrink-0">{n.updated}</span>
+                  <span className="text-xs text-zinc-400 shrink-0">{n.updated.slice(0, 10)}</span>
                 </Link>
               );
             })}

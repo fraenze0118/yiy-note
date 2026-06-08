@@ -1,6 +1,6 @@
 import { getAllNotes } from "@/lib/notes-data";
 import { TagCloud } from "@/components/ui/tag-cloud";
-import { domains } from "@/lib/domains";
+import { getDomains } from "@/lib/domains";
 
 export default async function TagsPage() {
   const notes = await getAllNotes();
@@ -11,7 +11,7 @@ export default async function TagsPage() {
       <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-6">
         通过标签跨领域关联笔记，点击标签查看相关笔记。
       </p>
-      <TagCloud notes={notes} domains={domains} />
+      <TagCloud notes={notes} domains={getDomains()} />
     </div>
   );
 }

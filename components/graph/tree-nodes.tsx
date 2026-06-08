@@ -25,9 +25,10 @@ const VAR_TO_HEX: Record<string, string> = {
   "var(--fg)": "#18181b",
 };
 
-/** CSS var 字符串 → hex。可选 alpha 0-1 追加为 8 位 hex */
+/** CSS var 或 hex 字符串 → 纯 hex。可选 alpha 0-1 追加 */
 function hex(color: string, alpha?: number): string {
-  const h = VAR_TO_HEX[color] ?? "#18181b";
+  // 自定义色盘给的直接 hex 值（如 #3b82f6）
+  const h = color.startsWith("#") ? color : (VAR_TO_HEX[color] ?? "#18181b");
   if (alpha === undefined) return h;
   return h + Math.round(alpha * 255).toString(16).padStart(2, "0");
 }

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getAllNotes } from "@/lib/notes-data";
 import { getCachedSession } from "@/lib/auth";
-import { domains, domainIconMap } from "@/lib/domains";
+import { getDomains, getDomainIconByKey } from "@/lib/domains";
 import { Clock, Plus, X } from "lucide-react";
 import type { TopicOption } from "@/lib/types";
 
@@ -37,6 +37,7 @@ export default async function NotesPage({
   const filterTopic = sp?.topic;
   const session = await getCachedSession();
 
+  const domains = getDomains();
   const allNotes = await getAllNotes();
 
   // 构建子树名称集合（点击 L1 时包含所有子节点笔记）
@@ -127,7 +128,7 @@ export default async function NotesPage({
         <div className="space-y-10">
           {Object.entries(grouped).map(([key, g]) => {
             if (g.notes.length === 0) return null;
-            const Icon = domainIconMap[key as keyof typeof domainIconMap];
+            const Icon = getDomainIconByKey(key);
             return (
               <section key={key}>
                 <div className="flex items-center gap-2 mb-3">
@@ -168,7 +169,7 @@ export default async function NotesPage({
                         ))}
                         <span className="text-xs text-zinc-400 flex items-center gap-1">
                           <Clock size={11} />
-                          {note.updated}
+                          {note.updated.slice(0, 10)}
                         </span>
                       </div>
                     </Link>

@@ -1,7 +1,7 @@
 import { readFileSync, existsSync } from "fs";
 import { TOPICS_FILE } from "./data-path";
 import { getAllNotes } from "./notes-data";
-import { domains } from "./domains";
+import { getDomains } from "./domains";
 import { flattenTopics } from "./topics-data";
 import { loadPositions } from "./positions";
 import type { NoteMeta } from "./types";
@@ -34,7 +34,7 @@ export interface TreeGraphData {
 export async function buildDomainTree(domainKey: string): Promise<TreeGraphData> {
   const allNotes = await getAllNotes();
   const domainNotes = allNotes.filter((n) => n.domain === domainKey);
-  const domain = domains.find((d) => d.key === domainKey);
+  const domain = getDomains().find((d) => d.key === domainKey);
   const color = domain?.color ?? "var(--fg)";
   const topicTree = loadTopicTree();
   const tree = topicTree[domainKey] ?? [];

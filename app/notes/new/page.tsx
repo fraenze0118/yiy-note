@@ -1,5 +1,5 @@
 import { CreateNoteForm } from "@/components/notes/create-note-form";
-import { domains } from "@/lib/domains";
+import { getDomains } from "@/lib/domains";
 
 export default async function NewNotePage({
   searchParams,
@@ -17,7 +17,7 @@ export default async function NewNotePage({
       <CreateNoteForm
         defaultDomain={defaultDomain}
         defaultTopic={defaultTopic}
-        domains={domains}
+        domains={getDomains()}
       />
     </div>
   );

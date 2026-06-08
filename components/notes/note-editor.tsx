@@ -2,10 +2,11 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Save, Eye, Edit3, X } from "lucide-react";
+import { Save, Eye, Edit3, X, Image } from "lucide-react";
 import type { Note, TopicOption, DomainDef } from "@/lib/types";
 import { updateNote } from "@/lib/notes";
 import { renderMarkdownClient } from "@/lib/markdown";
+import { uploadImage } from "@/lib/images";
 import { CodeEnhancer } from "./copy-button";
 
 function flattenTopicNames(topics: TopicOption[], depth = 0): { id: string; name: string; label: string }[] {
@@ -33,6 +34,7 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
   const [linkQuery, setLinkQuery] = useState("");
   const [linkIdx, setLinkIdx] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const domain = domains.find((d) => d.key === note.meta.domain);
   const topicOptions = useMemo(
@@ -115,6 +117,54 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
     }
   };
 
+  /** 在光标处插入文本 */
+  const insertAtCursor = useCallback((text: string) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const newContent = content.slice(0, start) + text + content.slice(end);
+    setContent(newContent);
+    const newPos = start + text.length;
+    setTimeout(() => { ta.setSelectionRange(newPos, newPos); ta.focus(); }, 0);
+  }, [content]);
+
+  /** 粘贴图片 (Ctrl+V) */
+  const handlePaste = useCallback(async (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of Array.from(items)) {
+      if (item.type.startsWith("image/")) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = async () => {
+          try {
+            const url = await uploadImage(note.meta.domain, reader.result as string);
+            insertAtCursor(`![图片](${url})\n`);
+          } catch { /* ignore */ }
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  }, [note.meta.domain, insertAtCursor]);
+
+  /** 从文件导入图片 */
+  const handleImageImport = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const url = await uploadImage(note.meta.domain, reader.result as string);
+        insertAtCursor(`![图片](${url})\n`);
+      } catch { /* ignore */ }
+    };
+    reader.readAsDataURL(file);
+    if (imageInputRef.current) imageInputRef.current.value = "";
+  }, [note.meta.domain, insertAtCursor]);
+
   const previewHtml = preview ? renderMarkdownClient(content) : "";
 
   return (
@@ -133,6 +183,16 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
           {preview ? <Edit3 size={14} /> : <Eye size={14} />}
           {preview ? "编辑" : "预览"}
         </button>
+        {!preview && (
+          <button
+            onClick={() => imageInputRef.current?.click()}
+            className="flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+            title="插入图片"
+          >
+            <Image size={14} />
+            图片
+          </button>
+        )}
         <div className="flex-1" />
         <button
           onClick={() => router.push(`/notes/${note.meta.id}`)}
@@ -151,6 +211,14 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
           {saving ? "保存中..." : "保存"}
         </button>
       </div>
+
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleImageImport}
+      />
 
       {/* Title input */}
       <input
@@ -201,6 +269,7 @@ export function NoteEditor({ note, allTitles, domains }: { note: Note; allTitles
             value={content}
             onChange={handleContentChange}
             onKeyDown={handleKeyDown}
+            onPaste={handlePaste}
             className="w-full min-h-[400px] bg-transparent outline-none resize-y text-sm p-4 rounded-xl border"
             style={{ borderColor: "var(--bd)", fontFamily: `"Sarasa Mono SC", "Cascadia Code", "JetBrains Mono", "Fira Code", "SimSun", "宋体", "ui-monospace", "SFMono-Regular", "monospace"`, lineHeight: 1.5, fontVariantLigatures: "none", tabSize: 4 }}
             placeholder="开始写作...（支持 Markdown、KaTeX 数学公式、代码高亮、[[ 插入双链）

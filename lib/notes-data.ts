@@ -144,7 +144,9 @@ export async function getAllNotes(): Promise<NoteMeta[]> {
     if (!existing || n.updated > existing.updated) deduped.set(n.id, n);
   }
   return Array.from(deduped.values()).sort(
-    (a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
+    (a, b) =>
+      new Date(b.updated).getTime() - new Date(a.updated).getTime() ||
+      new Date(b.created).getTime() - new Date(a.created).getTime()
   );
 }
 
@@ -160,7 +162,9 @@ export async function getNotesByDomain(domain: string): Promise<NoteMeta[]> {
     if (meta.id) notes.push(meta as NoteMeta);
   }
   return notes.sort(
-    (a, b) => new Date(b.updated).getTime() - new Date(a.updated).getTime()
+    (a, b) =>
+      new Date(b.updated).getTime() - new Date(a.updated).getTime() ||
+      new Date(b.created).getTime() - new Date(a.created).getTime()
   );
 }
 
@@ -188,7 +192,7 @@ export async function createNote(
   tags: string[] = []
 ): Promise<NoteMeta> {
   let id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-  const now = new Date().toISOString().slice(0, 10);
+  const now = new Date().toISOString();
 
   // 确保 ID 唯一
   const allIds = new Set((await getAllNotes()).map((n) => n.id));
@@ -242,7 +246,7 @@ export async function updateNoteData(
     topicId,
     tags: updates.tags ?? note.meta.tags,
     links: updates.links ?? note.meta.links,
-    updated: new Date().toISOString().slice(0, 10),
+    updated: new Date().toISOString(),
   };
   const newContent = updates.content !== undefined ? updates.content : note.content;
 

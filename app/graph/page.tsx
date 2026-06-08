@@ -1,13 +1,14 @@
 import { buildDomainTree } from "@/lib/graph";
 import { getAllNotes } from "@/lib/notes-data";
 import { GraphView } from "@/components/graph/graph-view";
-import { domains } from "@/lib/domains";
+import { getDomains } from "@/lib/domains";
 import { DomainTabs } from "@/components/graph/domain-tabs";
 export default async function GraphPage({
   searchParams,
 }: {
   searchParams: Promise<{ domain?: string }>;
 }) {
+  const domains = getDomains();
   const sp = await searchParams;
   const firstDomain = domains[0]?.key ?? "";
   const domainKey = sp?.domain ?? firstDomain;
